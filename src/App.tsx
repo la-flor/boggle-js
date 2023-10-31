@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import BoardTable from "./BoardTable";
+import Timer from "./Timer";
 import { createBoard, validateWord } from "./utilities/board";
 
 function App() {
@@ -12,9 +13,27 @@ function App() {
   const [words, setWords] = useState<Set<string>>(new Set());
 
   const resetBoard = () => setBoard(createBoard());
+  const [active, setActive] = useState<boolean>(false);
+
+  function startGame() {
+    resetBoard();
+    setActive(true);
+  }
+
+  function endGame() {
+    if (currentScore > highScore) {
+      setHighScore(currentScore);
+    }
+    setNPlays(nPlays + 1);
+    setCurrentScore(0);
+    setWord("");
+    setWords(new Set());
+    setActive(!active);
+  }
 
   const validateGuess = async (): Promise<boolean> => {
     const validWord: boolean = await validateWord(word);
+    // TODO: validate word is on the board
     const wordAlreadyUsed: boolean = words.has(word);
 
     if (validWord && !wordAlreadyUsed) {
@@ -35,11 +54,6 @@ function App() {
     setWord("");
   };
 
-  // TODO: create timer countdown
-
-  // TODO: when timer runs out, update high score and reset current score
-  // Math.max(word.length, highScore)
-
   return (
     <div id="boggle" className="App">
       <header className="App-header">
@@ -47,6 +61,8 @@ function App() {
       </header>
 
       <BoardTable board={board} />
+
+      <Timer active={active} startGame={startGame} endGame={endGame} />
 
       <div>
         <h3>
@@ -58,26 +74,31 @@ function App() {
         </h3>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="word">Word:</label>
-        <input
-          id="word"
-          type="text"
-          onChange={(e) => setWord(e.target.value)}
-          value={word}
-        />
-        <button id="submit" type="submit">
-          Submit
-        </button>
-      </form>
+      {active ? (
+        <React.Fragment>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="word">Word:</label>
+            <input
+              id="word"
+              type="text"
+              autoComplete="off"
+              onChange={(e) => setWord(e.target.value)}
+              value={word}
+            />
+            <button id="submit" type="submit">
+              Submit
+            </button>
+          </form>
 
-      <div>
-        <ul className="words">
-          {[...words.values()].map((word, i) => (
-            <li key={i}>{word}</li>
-          ))}
-        </ul>
-      </div>
+          <div>
+            <ul className="words">
+              {[...words.values()].map((word, i) => (
+                <li key={i}>{word}</li>
+              ))}
+            </ul>
+          </div>
+        </React.Fragment>
+      ) : null}
     </div>
   );
 }
