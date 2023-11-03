@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import BoardTable from "./BoardTable";
+import HighScore from "./HighScore";
 import Timer from "./Timer";
 import { createBoard, validateWord } from "./utilities/board";
 
@@ -11,6 +12,9 @@ function App() {
   const [nPlays, setNPlays] = useState<number>(0);
   const [word, setWord] = useState<string>("");
   const [words, setWords] = useState<Set<string>>(new Set());
+  const [message, setMessage] = useState<
+    "" | "World already used" | "Invalid word"
+  >("");
 
   const resetBoard = () => setBoard(createBoard());
   const [active, setActive] = useState<boolean>(false);
@@ -24,30 +28,39 @@ function App() {
     if (currentScore > highScore) {
       setHighScore(currentScore);
     }
-    setNPlays(nPlays + 1);
+    setNPlays(nPlays + currentScore);
     setCurrentScore(0);
     setWord("");
     setWords(new Set());
     setActive(!active);
+    setMessage("");
   }
 
   const validateGuess = async (): Promise<boolean> => {
-    const validWord: boolean = await validateWord(word);
-    // TODO: validate word is on the board
-    const wordAlreadyUsed: boolean = words.has(word);
+    const validWord: boolean = await validateWord(board, word.toUpperCase());
 
-    if (validWord && !wordAlreadyUsed) {
-      return true;
+    const wordAlreadyUsed: boolean = words.has(word.toUpperCase());
+
+    if (wordAlreadyUsed) {
+      setMessage("World already used");
+      return false;
     }
 
-    return false;
+    if (!validWord) {
+      setMessage("Invalid word");
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setMessage("");
+
     if (await validateGuess()) {
-      setWords((words) => new Set([...words.values(), word]));
+      setWords((words) => new Set([...words.values(), word.toUpperCase()]));
       setCurrentScore(word.length);
     }
 
@@ -64,18 +77,15 @@ function App() {
 
       <Timer active={active} startGame={startGame} endGame={endGame} />
 
-      <div>
-        <h3>
-          High Score: <b>{highScore}</b>
-        </h3>
-
-        <h3>
-          Plays: <b>{nPlays}</b>
-        </h3>
-      </div>
+      <HighScore
+        highScore={highScore}
+        nPlays={nPlays}
+        currentScore={currentScore}
+      />
 
       {active ? (
         <React.Fragment>
+          {message && <p id="message">{message}</p>}
           <form onSubmit={handleSubmit}>
             <label htmlFor="word">Word:</label>
             <input
