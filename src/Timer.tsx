@@ -24,7 +24,7 @@ function Timer({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [active, timeRemaining]);
+  }, [active, endGame, timeRemaining]);
 
   function reset() {
     setTimeRemaining(60);

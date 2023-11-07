@@ -1,8 +1,10 @@
 function HighScore({
+  active,
   highScore,
   nPlays,
   currentScore,
 }: {
+  active: boolean;
   highScore: number;
   nPlays: number;
   currentScore: number;
@@ -13,9 +15,11 @@ function HighScore({
         High Score: <b>{highScore}</b> Plays: <b>{nPlays}</b>
       </h3>
 
-      <h3>
-        Current Score: <b>{currentScore}</b>
-      </h3>
+      {active && (
+        <h3>
+          Current Score: <b>{currentScore}</b>
+        </h3>
+      )}
     </div>
   );
 }

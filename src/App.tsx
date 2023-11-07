@@ -28,7 +28,7 @@ function App() {
     if (currentScore > highScore) {
       setHighScore(currentScore);
     }
-    setNPlays(nPlays + currentScore);
+    setNPlays(nPlays + 1);
     setCurrentScore(0);
     setWord("");
     setWords(new Set());
@@ -61,7 +61,7 @@ function App() {
 
     if (await validateGuess()) {
       setWords((words) => new Set([...words.values(), word.toUpperCase()]));
-      setCurrentScore(word.length);
+      setCurrentScore(currentScore + word.length);
     }
 
     setWord("");
@@ -78,6 +78,7 @@ function App() {
       <Timer active={active} startGame={startGame} endGame={endGame} />
 
       <HighScore
+        active={active}
         highScore={highScore}
         nPlays={nPlays}
         currentScore={currentScore}
