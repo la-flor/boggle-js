@@ -1,6 +1,4 @@
-import React, { useContext } from "react";
 import "./BoardTable.css";
-import { createBoard } from "./utilities/board";
 
 const BoardTable = ({ board }: { board: Board }) => {
   return (
