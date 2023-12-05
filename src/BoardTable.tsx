@@ -2,7 +2,7 @@ import "./BoardTable.css";
 
 const BoardTable = ({ board }: { board: Board }) => {
   return (
-    <table className="board fadein">
+    <table className="board">
       <tbody>
         {board.map((row, i) => (
           <tr key={i}>

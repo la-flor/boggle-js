@@ -68,8 +68,8 @@ function App() {
   };
 
   return (
-    <div id="boggle" className="App">
-      <header className="App-header">
+    <div id="boggle">
+      <header>
         <h1>Boggle</h1>
       </header>
 
